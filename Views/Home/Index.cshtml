@@ -1,0 +1,180 @@
+﻿
+@model List<NasaApodGallery.Models.ApodDto>
+
+@{
+    ViewData["Title"] = "NASA APOD Gallery";
+}
+
+<div class="apod-page">
+
+    <div class="apod-hero">
+        <div class="apod-hero-content">
+            <span class="apod-eyebrow">✦ NASA ASTRONOMY PICTURE OF THE DAY</span>
+
+            <h1>Explore the <span>Universe.</span></h1>
+
+            <p>
+                Discover the beauty of our universe, one day at a time.
+                Explore breathtaking astronomy images and stories from NASA.
+            </p>
+
+            <a href="#gallery" class="apod-explore-btn">
+                Explore Gallery <span>↓</span>
+            </a>
+        </div>
+
+        <div class="apod-orbit orbit-one"></div>
+        <div class="apod-orbit orbit-two"></div>
+        <div class="apod-glow"></div>
+    </div>
+
+    <div class="apod-content">
+
+        <section class="apod-fetch-section">
+            <div class="apod-section-heading">
+                <div>
+                    <span class="apod-label">DISCOVER MORE</span>
+                    <h2>Find Astronomy Pictures</h2>
+                    <p>Select a date range to explore NASA's collection.</p>
+                </div>
+                <div class="apod-calendar-icon">✧</div>
+            </div>
+
+            <form asp-controller="Home"
+                  asp-action="FetchApod"
+                  method="post"
+                  class="apod-form">
+
+                <div class="apod-input-group">
+                    <label for="startDate">START DATE</label>
+                    <input type="date"
+                           id="startDate"
+                           name="startDate"
+                           max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           required />
+                </div>
+
+                <div class="apod-input-group">
+                    <label for="endDate">END DATE</label>
+                    <input type="date"
+                           id="endDate"
+                           name="endDate"
+                           max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           required />
+                </div>
+
+                <button type="submit" class="apod-fetch-btn">
+                    <span>✦</span> Fetch Pictures
+                </button>
+
+            </form>
+
+            @if (TempData["Message"] != null)
+            {
+                <div class="apod-alert success">
+                    ✓ @TempData["Message"]
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="apod-alert error">
+                    @TempData["Error"]
+                </div>
+            }
+        </section>
+
+        <section id="gallery" class="apod-gallery-section">
+
+            <div class="apod-gallery-heading">
+                <div>
+                    <span class="apod-label">THE COSMOS COLLECTION</span>
+                    <h2>Astronomy Gallery</h2>
+                    <p>Explore the wonders captured by NASA.</p>
+                </div>
+
+                <div class="apod-count">
+                    <strong>@(Model?.Count ?? 0)</strong>
+                    <span>DISCOVERIES</span>
+                </div>
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="apod-grid">
+
+                    @foreach (var apod in Model)
+                    {
+                        <article class="apod-card">
+
+                            <div class="apod-image-wrapper">
+
+                                @if (apod.MediaType == "image")
+                                {
+                                    <img src="@apod.Url"
+                                         alt="@apod.Title"
+                                         loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div class="apod-video-placeholder">
+                                        <span>▶</span>
+                                        <a href="@apod.Url"
+                                           target="_blank"
+                                           rel="noopener noreferrer">
+                                            Watch Astronomy Video
+                                        </a>
+                                    </div>
+                                }
+
+                                <span class="apod-media-tag">
+                                    @apod.MediaType.ToUpper()
+                                </span>
+                            </div>
+
+                            <div class="apod-card-content">
+
+                                <span class="apod-date">
+                                    ✦ @apod.Date
+                                </span>
+
+                                <h3>@apod.Title</h3>
+
+                                <p class="apod-explanation">
+                                    @apod.Explanation
+                                </p>
+
+                                <a href="@apod.Url"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="apod-view-link">
+                                    View Details <span>↗</span>
+                                </a>
+
+                            </div>
+                        </article>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="apod-empty-state">
+                    <div class="apod-empty-icon">✧</div>
+                    <h3>Your universe awaits.</h3>
+                    <p>
+                        Select a date range above and fetch your first
+                        collection of astronomy pictures.
+                    </p>
+                </div>
+            }
+
+        </section>
+
+        <footer class="apod-footer">
+            <p>Made with curiosity for the universe.</p>
+            <span>Data provided by NASA APOD</span>
+        </footer>
+
+    </div>
+</div>
